@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     localPatterns: [
       { pathname: '/uploads/**' },
     ],
+    remotePatterns: [
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+    ],
   },
 };
 

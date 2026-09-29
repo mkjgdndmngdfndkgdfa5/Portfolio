@@ -33,11 +33,26 @@ export default function AdminPage() {
         router.push('/login');
         return;
       }
-      setProjects(await res.json());
-    } catch {}
+      const data = await res.json();
+      setProjects(Array.isArray(data) ? data : []);
+    } catch {
+      setProjects([]);
+    }
   };
 
-  useEffect(() => { loadProjects(); }, []);
+  useEffect(() => {
+    fetch('/api/projects', { credentials: 'same-origin' })
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.push('/login');
+          return;
+        }
+        const data = await res.json();
+        setProjects(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setProjects([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFile = (f: File) => {
     setFile(f);

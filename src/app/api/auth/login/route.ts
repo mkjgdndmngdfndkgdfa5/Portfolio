@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { signToken } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // Admin credentials from environment
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'kz';
 const ADMIN_HASH = process.env.ADMIN_PASSWORD_HASH || '';
@@ -36,9 +39,10 @@ export async function POST(req: NextRequest) {
     const response = Response.json({ success: true });
     // Set httpOnly cookie
     const headers = new Headers(response.headers);
+    const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
     headers.set(
       'Set-Cookie',
-      `admin_token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 3600}; SameSite=Strict`
+      `admin_token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 3600}; SameSite=Lax${secure}`
     );
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -53,7 +57,7 @@ export async function DELETE() {
   const headers = new Headers();
   headers.set(
     'Set-Cookie',
-    'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict'
+    'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
   );
   return new Response(JSON.stringify({ success: true }), { status: 200, headers });
 }

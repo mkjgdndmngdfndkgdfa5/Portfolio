@@ -36,8 +36,8 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/projects')
       .then(r => r.json())
-      .then(setProjects)
-      .catch(() => {});
+      .then(data => setProjects(Array.isArray(data) ? data : []))
+      .catch(() => setProjects([]));
   }, []);
 
   const featured = projects.slice(0, 5);
